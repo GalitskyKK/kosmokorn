@@ -6,7 +6,7 @@ interface ICardProps {
   children: React.ReactNode
   className?: string
   animated?: boolean
-  variant?: "default" | "glassmorphism" | "elevated"
+  variant?: "default" | "glass" | "primary"
   padding?: "none" | "sm" | "md" | "lg"
   onClick?: () => void
   as?: "div" | "article" | "section"
@@ -25,21 +25,21 @@ const Card: React.FC<ICardProps> = ({
   onClick,
   as = "div"
 }) => {
-  const baseClasses = ["rounded-xl transition-all duration-200", onClick && "cursor-pointer"]
+  const baseClasses = ["rounded-2xl transition-all duration-300", onClick && "cursor-pointer"]
 
   const variantClasses = {
-    default: [
-      "bg-white dark:bg-gray-800",
-      "border border-gray-200 dark:border-gray-700",
-      "shadow-sm hover:shadow-md"
+    default: ["bg-dark-800", "border border-dark-700", "shadow-sm hover:shadow-md"],
+    glass: [
+      "bg-dark-900/40",
+      "backdrop-blur-xl backdrop-saturate-150",
+      "border border-dark-600/60",
+      "shadow-lg"
     ],
-    glassmorphism: [
-      "bg-white/10 dark:bg-gray-900/20",
-      "backdrop-blur-lg backdrop-saturate-150",
-      "border border-white/20 dark:border-gray-700/50",
-      "shadow-xl"
-    ],
-    elevated: ["bg-white dark:bg-gray-800", "shadow-lg hover:shadow-xl", "border-0"]
+    primary: [
+      "bg-gradient-to-br from-brand-primary to-brand-secondary",
+      "shadow-lg hover:shadow-xl",
+      "border-0 text-white"
+    ]
   }
 
   const paddingClasses = {
@@ -55,9 +55,9 @@ const Card: React.FC<ICardProps> = ({
 
   const animationProps = animated
     ? {
-        whileHover: { y: -2, scale: 1.01 },
-        whileTap: onClick ? { scale: 0.99 } : undefined,
-        transition: { duration: 0.2, ease: "easeOut" }
+        whileHover: { y: -3, scale: 1.015 },
+        whileTap: onClick ? { scale: 0.985 } : undefined,
+        transition: { type: "spring", stiffness: 300, damping: 20 }
       }
     : {}
 
@@ -72,22 +72,14 @@ const Card: React.FC<ICardProps> = ({
 export const CardHeader: React.FC<{
   children: React.ReactNode
   className?: string
-}> = ({ children, className }) => (
-  <div className={cn("mb-4 mobile:mb-6", className)}>{children}</div>
-)
+}> = ({ children, className }) => <div className={cn("mb-4", className)}>{children}</div>
 
 export const CardTitle: React.FC<{
   children: React.ReactNode
   className?: string
   as?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
 }> = ({ children, className, as: Component = "h3" }) => (
-  <Component
-    className={cn(
-      "text-lg mobile:text-xl font-semibold",
-      "text-gray-900 dark:text-white",
-      "leading-tight",
-      className
-    )}>
+  <Component className={cn("text-lg mobile:text-xl font-bold", "leading-tight", className)}>
     {children}
   </Component>
 )
@@ -96,15 +88,7 @@ export const CardDescription: React.FC<{
   children: React.ReactNode
   className?: string
 }> = ({ children, className }) => (
-  <p
-    className={cn(
-      "text-sm mobile:text-base",
-      "text-gray-600 dark:text-gray-400",
-      "leading-relaxed",
-      className
-    )}>
-    {children}
-  </p>
+  <p className={cn("text-sm", "text-dark-500", "leading-relaxed", className)}>{children}</p>
 )
 
 export const CardContent: React.FC<{
@@ -127,7 +111,7 @@ export const CardFooter: React.FC<{
   return (
     <div
       className={cn(
-        "mt-6 pt-4 border-t border-gray-200 dark:border-gray-700",
+        "mt-6 pt-4 border-t border-dark-700/50",
         "flex items-center gap-3",
         justifyClasses[justify],
         className

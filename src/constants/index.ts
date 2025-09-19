@@ -89,14 +89,59 @@ export const STAGE_INFO: Record<PlanetStage, { name: string; description: string
     }
   }
 
-// Цветовые схемы для стадий
+// Цветовые схемы для стадий - мягкие пастельные тона
 export const STAGE_COLORS: Record<PlanetStage, string> = {
-  seed: "#6B7280",
-  core: "#DC2626",
-  atmosphere: "#F59E0B",
-  surface: "#059669",
-  life: "#3B82F6",
-  mature: "#8B5CF6"
+  seed: "#9CA3AF",
+  core: "#F87171",
+  atmosphere: "#FBBF24",
+  surface: "#34D399",
+  life: "#60A5FA",
+  mature: "#A78BFA"
+}
+
+// Яркие контрастные цвета в стиле little-planet
+export const STAGE_COLOR_GRADIENTS: Record<
+  PlanetStage,
+  { primary: string; secondary: string; accent: string }
+> = {
+  seed: {
+    primary: "#8B4513", // Коричневый (земля)
+    secondary: "#654321", // Тёмно-коричневый
+    accent: "#D2691E" // Шоколадный
+  },
+  core: {
+    primary: "#FF0000", // Ярко-красный (лава)
+    secondary: "#FF4500", // Красно-оранжевый
+    accent: "#FFD700" // Золотой
+  },
+  atmosphere: {
+    primary: "#87CEEB", // Небесно-голубой
+    secondary: "#4682B4", // Стальной синий
+    accent: "#1E90FF" // Синий
+  },
+  surface: {
+    primary: "#0066CC", // Океанский синий
+    secondary: "#228B22", // Лесной зелёный
+    accent: "#32CD32" // Лайм-зелёный
+  },
+  life: {
+    primary: "#0066CC", // Океанский синий (вода)
+    secondary: "#228B22", // Лесной зелёный (земля)
+    accent: "#32CD32" // Лайм-зелёный (растения)
+  },
+  mature: {
+    primary: "#0066CC", // Океанский синий (вода)
+    secondary: "#228B22", // Лесной зелёный (земля)
+    accent: "#32CD32" // Лайм-зелёный (растения)
+  }
+}
+
+// Атмосферные цвета для облаков и эффектов
+export const ATMOSPHERE_COLORS = {
+  subtle: "rgba(173, 216, 230, 0.3)",
+  medium: "rgba(173, 216, 230, 0.5)",
+  dense: "rgba(173, 216, 230, 0.7)",
+  storm: "rgba(119, 136, 153, 0.6)"
 }
 
 // Размеры планет по стадиям (относительные)
@@ -142,25 +187,35 @@ export const ANIMATION_CONFIG = {
   }
 }
 
-// Настройки 3D сцены
+// Настройки 3D сцены для мультяшного дизайна
 export const SCENE_CONFIG = {
   camera: {
-    position: [0, 0, 5] as [number, number, number],
-    fov: 50,
+    position: [0, 0, 4] as [number, number, number],
+    fov: 60, // Немного больше FOV для более дружелюбного вида
     near: 0.1,
     far: 1000
   },
   lights: {
-    ambient: 0.4,
-    directional: 0.8,
-    point: 0.6
+    ambient: 0.8, // Очень мягкое освещение для мультяшного эффекта
+    directional: 0.5, // Уменьшено для менее резких теней
+    point: 0.4
   },
   controls: {
     enableZoom: true,
     enablePan: false,
     enableRotate: true,
     autoRotate: true,
-    autoRotateSpeed: 1
+    autoRotateSpeed: 0.3, // Ещё медленнее для спокойного вида
+    minDistance: 50,
+    maxDistance: 500
+  },
+  // Настройки для максимально блочной геометрии как в little-planet
+  geometry: {
+    detail: 0, // Минимальная детализация для блочного вида
+    flatShading: true, // Плоское затенение для low-poly эффекта
+    segments: 6, // Очень мало сегментов для maximum блочности
+    surfaceDensity: 0.8, // Плотность объектов на поверхности
+    continentCoverage: 0.4 // Покрытие континентами
   }
 }
 

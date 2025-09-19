@@ -178,7 +178,7 @@ const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({ onCreatePlanet }) => {
           </motion.div>
         ) : (
           // Форма создания планеты
-          <Card variant="glassmorphism" padding="lg" animated>
+          <Card variant="glass" padding="lg" animated>
             <CardHeader>
               <div className="text-center">
                 <motion.div

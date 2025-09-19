@@ -49,114 +49,8 @@ const App: React.FC = () => {
     triggerEvolution
   } = usePlanetEvolution(userData?.seed || "", userData?.currentDay || 1)
 
-  // Определение первого запуска
-  // const isFirstVisit = !userData
-
-  // Инициализация приложения
-  useEffect(() => {
-    const initializeApp = async (): Promise<void> => {
-      try {
-        setAppState((prev) => ({ ...prev, isLoading: true, error: null }))
-
-        // Загружаем сохраненные данные
-        const savedData = StorageService.load()
-
-        if (savedData && StorageService.validateData(savedData)) {
-          // Данные найдены и валидны
-          setUserData(savedData.userData)
-          setAppState((prev) => ({
-            ...prev,
-            isFirstVisit: false,
-            currentView: "planet",
-            isInitialized: true
-          }))
-        } else {
-          // Первый запуск или поврежденные данные
-          setAppState((prev) => ({
-            ...prev,
-            isFirstVisit: true,
-            currentView: "welcome",
-            isInitialized: true
-          }))
-        }
-      } catch (error) {
-        console.error("Ошибка инициализации приложения:", error)
-        setAppState((prev) => ({
-          ...prev,
-          error: "Ошибка загрузки приложения",
-          isInitialized: true
-        }))
-      } finally {
-        setAppState((prev) => ({ ...prev, isLoading: false }))
-      }
-    }
-
-    if (!isUserDataLoading) {
-      initializeApp()
-    }
-  }, [isUserDataLoading, setUserData])
-
   // Обработка ежедневного визита
-  useEffect(() => {
-    if (userData && isNewDay && daysPassed > 0) {
-      handleDailyVisit()
-    }
-  }, [userData, isNewDay, daysPassed])
-
-  // Обработка создания новой планеты
-  const handleCreatePlanet = async (planetName: string): Promise<void> => {
-    const validation = validatePlanetName(planetName)
-    if (!validation.isValid) {
-      setAppState((prev) => ({ ...prev, error: validation.error || null }))
-      return
-    }
-
-    try {
-      setAppState((prev) => ({ ...prev, isLoading: true, error: null }))
-
-      // Создаем seed на основе имени планеты и времени
-      const seed = `${planetName}-${Date.now()}`
-
-      const newUserData: IUserData = {
-        seed,
-        planetName,
-        currentDay: 1,
-        lastVisit: new Date(),
-        totalVisits: 1,
-        achievements: ["first_visit"],
-        settings: DEFAULT_SETTINGS
-      }
-
-      // Сохраняем данные
-      setUserData(newUserData)
-
-      const storageData: IStorageData = {
-        userData: newUserData,
-        planetData: null, // Будет сгенерировано хуком
-        eventHistory: [],
-        version: "1.0.0"
-      }
-
-      StorageService.save(storageData)
-
-      // Переходим к экрану планеты
-      setAppState((prev) => ({
-        ...prev,
-        isFirstVisit: false,
-        currentView: "planet",
-        isLoading: false
-      }))
-
-      // Обновляем серию визитов
-      updateStreak(1)
-    } catch (error) {
-      console.error("Ошибка создания планеты:", error)
-      setAppState((prev) => ({ ...prev, error: "Ошибка создания планеты", isLoading: false }))
-    }
-  }
-
-  // Обработка ежедневного визита
-  const handleDailyVisit = async (): Promise<void> => {
+  const handleDailyVisit = React.useCallback(async (): Promise<void> => {
     if (!userData) return
 
     try {
@@ -211,6 +105,121 @@ const App: React.FC = () => {
       setAppState((prev) => ({ ...prev, error: "Ошибка обновления планеты" }))
     } finally {
       setAppState((prev) => ({ ...prev, isLoading: false }))
+    }
+  }, [
+    userData,
+    daysPassed,
+    currentStreak,
+    planetData,
+    setUserData,
+    updateLastVisit,
+    updateStreak,
+    triggerEvolution
+  ])
+
+  // Определение первого запуска
+  // const isFirstVisit = !userData
+
+  // Инициализация приложения
+  useEffect(() => {
+    const initializeApp = async (): Promise<void> => {
+      try {
+        setAppState((prev) => ({ ...prev, isLoading: true, error: null }))
+
+        // Загружаем сохраненные данные
+        const savedData = StorageService.load()
+
+        if (savedData && StorageService.validateData(savedData)) {
+          // Данные найдены и валидны
+          setUserData(savedData.userData)
+          setAppState((prev) => ({
+            ...prev,
+            isFirstVisit: false,
+            currentView: "planet",
+            isInitialized: true
+          }))
+        } else {
+          // Первый запуск или поврежденные данные
+          setAppState((prev) => ({
+            ...prev,
+            isFirstVisit: true,
+            currentView: "welcome",
+            isInitialized: true
+          }))
+        }
+      } catch (error) {
+        console.error("Ошибка инициализации приложения:", error)
+        setAppState((prev) => ({
+          ...prev,
+          error: "Ошибка загрузки приложения",
+          isInitialized: true
+        }))
+      } finally {
+        setAppState((prev) => ({ ...prev, isLoading: false }))
+      }
+    }
+
+    if (!isUserDataLoading) {
+      initializeApp()
+    }
+  }, [isUserDataLoading, setUserData])
+
+  // Обработка ежедневного визита
+  useEffect(() => {
+    if (userData && isNewDay && daysPassed > 0) {
+      handleDailyVisit()
+    }
+  }, [userData, isNewDay, daysPassed, handleDailyVisit])
+
+  // Обработка создания новой планеты
+  const handleCreatePlanet = async (planetName: string): Promise<void> => {
+    const validation = validatePlanetName(planetName)
+    if (!validation.isValid) {
+      setAppState((prev) => ({ ...prev, error: validation.error || null }))
+      return
+    }
+
+    try {
+      setAppState((prev) => ({ ...prev, isLoading: true, error: null }))
+
+      // Создаем seed на основе имени планеты и времени
+      const seed = `${planetName}-${Date.now()}`
+
+      const newUserData: IUserData = {
+        seed,
+        planetName,
+        currentDay: 1,
+        lastVisit: new Date(),
+        totalVisits: 1,
+        achievements: ["first_visit"],
+        settings: DEFAULT_SETTINGS
+      }
+
+      // Сохраняем данные
+      setUserData(newUserData)
+
+      const storageData: IStorageData = {
+        userData: newUserData,
+        planetData: null, // Будет сгенерировано хуком
+        eventHistory: [],
+        version: "1.0.0"
+      }
+
+      StorageService.save(storageData)
+
+      // Переходим к экрану планеты
+      setAppState((prev) => ({
+        ...prev,
+        isFirstVisit: false,
+        currentView: "planet",
+        isLoading: false
+      }))
+
+      // Обновляем серию визитов
+      updateStreak(1)
+    } catch (error) {
+      console.error("Ошибка создания планеты:", error)
+      setAppState((prev) => ({ ...prev, error: "Ошибка создания планеты", isLoading: false }))
     }
   }
 
@@ -363,7 +372,7 @@ const App: React.FC = () => {
   return (
     <div
       className={`
-        min-h-screen-mobile bg-gradient-to-br from-dark-500 via-dark-400 to-dark-300
+        min-h-screen-mobile bg-space-gradient font-sans text-brand-light
         ${isTouchDevice() ? "touch-manipulation" : ""}
       `}>
       <div className="safe-top safe-bottom safe-left safe-right">
